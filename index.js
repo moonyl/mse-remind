@@ -27,7 +27,21 @@ app.use('/socket.io', express.static('node_modules/socket.io/client-dist'))
 io.on('connection', socket => {
     console.log("connection");
     //ffmpeg.stdio[1].pipe(process.stdout);
-    console.log("initialization:", mp4frag.initialization);
+    function start() {
+        if (mp4frag.initialization) {
+            socket.emit('segment', mp4frag.initialization);
+        } else {
+            socket.emit('message', 'init segment not ready yet, reload page');
+        }
+    }
+
+    socket.on('message', (msg) => {
+        switch (msg) {
+            case 'start':
+                start();
+                break;
+        }
+    });
 });
 
 http.listen(3000, () => {
