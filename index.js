@@ -30,9 +30,16 @@ io.on('connection', socket => {
     function start() {
         if (mp4frag.initialization) {
             socket.emit('segment', mp4frag.initialization);
+            mp4frag.on('segment', emitSegment);
         } else {
             socket.emit('message', 'init segment not ready yet, reload page');
         }
+    }
+
+    function emitSegment(data) {
+        console.log("emitSegment");
+        console.dir(data);
+        socket.emit('segment', data.segment);
     }
 
     socket.on('message', (msg) => {
